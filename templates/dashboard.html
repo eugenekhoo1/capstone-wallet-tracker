@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Wallet Tracker</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+html,body,h1,h2,h3,h4,h5 {font-family: "Courier New", monospace}
+</style>
+</head>
+<body class="w3-light-grey">
+
+<!-- Top container -->
+<div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
+  <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i>Menu</button>
+  <span class="w3-bar-item w3-right">Wallet Tracker</span>
+</div>
+
+<!-- Sidebar/menu -->
+<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
+  <div class="w3-container w3-row">
+    <div class="w3-col s8 w3-bar">
+      <span>Signed in as, <strong>{{ user }}</strong></span><br>
+    </div>
+  </div>
+  <hr>
+  <div class="w3-container">
+    <h5>Uniswap V2</h5>
+  </div>
+  <div class="w3-bar-block">
+    <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
+    <a href="flows" class="w3-bar-item w3-button w3-padding">Token Flows</a>
+    <a href="logout" class="w3-bar-item w3-button w3-padding">Logout</a>
+  </div>
+</nav>
+
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+<!-- !PAGE CONTENT! -->
+<div class="w3-main" style="margin-left:300px;margin-top:43px;">
+
+  <!-- Header -->
+  <header class="w3-container" style="padding-top:22px">
+    <h5><b>Trading Statistics</b></h5>
+  </header>
+
+  <div class="w3-row-padding w3-margin-bottom">
+    <div class="w3-quarter">
+      <div class="w3-container w3-black w3-padding-16">
+        <h4><b>Transactions</b></h4>
+        <div class="w3-left">
+          <h3>{{ transaction_count }}</h3> <!-- Pull data from python -->
+        </div>
+        <div class="w3-clear"></div>
+      </div>
+    </div>
+    <div class="w3-quarter">
+      <div class="w3-container w3-black w3-padding-16">
+        <h4><b>Total Volume Traded</b></h4>
+        <div class="w3-left">
+          <h3>{{ total_volume }}</h3> <!-- Pull data from python -->
+        </div>
+        <div class="w3-clear"></div>
+      </div>
+    </div>
+    <div class="w3-quarter">
+      <div class="w3-container w3-black w3-padding-16">
+        <h4><b>Realized Profit</b></h4>
+        <div class="w3-left">
+          <h3>{{ realized_profit }}</h3> <!-- Pull data from python -->
+        </div>
+        <div class="w3-clear"></div>
+      </div>
+    </div>
+    <div class="w3-quarter">
+      <div class="w3-container w3-black w3-text-white w3-padding-16">
+        <h4><b>Unrealized Profit</b></h4>
+        <div class="w3-left">
+          <h3>{{ unrealized_profit }}</h3> <!-- Pull data from python -->
+        </div>
+        <div class="w3-clear"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tables -->
+  <div class="w3-panel">
+    <div class="w3-row-padding" style="margin:0 -16px">
+      <div class="w3-container">
+        <h5>Positions</h5>
+        <table class="w3-table w3-bordered w3-centered w3-white">
+          <tr class="w3-black">
+            <th>Token</th>
+            <th>Amount Bought</th>
+            <th><b>Amount Sold</th>
+            <th>Net Position</th>
+          </tr>
+          {% for i in pnl.index %}
+            <tr>
+              <th>{{ pnl.iloc[i]["token"] }}</th>
+              <th>{{ pnl.iloc[i]["token_bought_amount"] }}</th>
+              <th>{{ pnl.iloc[i]["token_sold_amount"] }}</th>
+              <th>{{ pnl.iloc[i]["net_position"] }}</th>
+
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div> 
+  </div>
+
+  <div class="w3-panel">
+    <div class="w3-row-padding" style="margin:0 -16px">
+      <div class="w3-container">
+        <h5>Profit/Loss</h5>
+        <table class="w3-table w3-bordered w3-centered w3-white">
+          <tr class="w3-black">
+            <th>Token</th>
+            <th>Average Cost</th>
+            <th>Realized Profit</th>
+            <th>Unrealized Profit</th>
+
+          </tr>
+          {% for i in pnl.index %}
+            <tr>
+              <th>{{ pnl.iloc[i]["token"] }}</th>
+              <th>{{ pnl.iloc[i]["avg_cost_price"] }}</th>
+              <th>{{ pnl.iloc[i]["realized_pnl"] }}</th>
+              <th>{{ pnl.iloc[i]["unrealized_pnl"] }}</th>
+
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="w3-panel">
+    <div class="w3-row-padding" style="margin:0 -16px">
+      <div class="w3-container">
+        <h5>Last 10 Trades</h5>
+        <table class="w3-table w3-bordered w3-centered w3-white">
+          <tr class="w3-black">
+            <th>Date</th>
+            <th>Token Bought</th>
+            <th>Amount Bought</th>
+            <th>Token Sold</th>
+            <th>Amount Sold</th>
+            <th>USD Value</th>
+          </tr>
+          {% for i in last_10_trades.index %}
+            <tr>
+              <th>{{ last_10_trades.iloc[i]["time"] }}</th>
+              <th>
+                {% if last_10_trades.iloc[i]["token_bought"][:12]|length == 12 %}
+                  {{ last_10_trades.iloc[i]["token_bought"][:12] + '...'}}
+                {% else %}
+                  {{ last_10_trades.iloc[i]["token_bought"] }}
+                {% endif %}
+              </th>
+              <th>{{ last_10_trades.iloc[i]["token_bought_amount"] }}</th>
+              <th>
+                {% if last_10_trades.iloc[i]["token_sold"][:12]|length == 12 %}
+                  {{ last_10_trades.iloc[i]["token_sold"][:12] + '...'}}
+                {% else %}
+                  {{ last_10_trades.iloc[i]["token_sold"] }}
+                {% endif %}
+              </th>
+              <th>{{ last_10_trades.iloc[i]["token_sold_amount"] }}</th>
+              <th>{{ last_10_trades.iloc[i]["usd_value_at_txn"] }}</th>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="w3-container w3-padding-16 w3-light-grey">
+    <p>By Eugene Khoo</p>
+    <p><a href="https://github.com/eugenekhoo1" target="_blank">Github</a></p>
+  </footer>
+
+  <!-- End page content -->
+</div>
+
+<script>
+// Get the Sidebar
+var mySidebar = document.getElementById("mySidebar");
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById("myOverlay");
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = "none";
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = "block";
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = "none";
+  overlayBg.style.display = "none";
+}
+</script>
+
+</body>
+</html>
